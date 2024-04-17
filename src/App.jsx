@@ -24,8 +24,16 @@ export default function App() {
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
   const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+
+  function handleSelectedMovie(id) {
+    setSelectedId((selectedId) => (selectedId === id ? null : id));
+  }
+
+  function handleCloseMovie() {
+    setSelectedId(null);
+  }
 
   useEffect(
     function () {
@@ -49,7 +57,6 @@ export default function App() {
 
           setMovies(data.Search);
         } catch (err) {
-          console.error(err.message);
           setError(err.message);
         } finally {
           setIsLoading(false);
@@ -77,15 +84,37 @@ export default function App() {
       <Main movies={movies}>
         <Box movies={movies}>
           {isLoading && <Loader />}
-          {!isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && (
+            <MovieList movies={movies} onSelectedMovie={handleSelectedMovie} />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
-          <WatchedSummary watched={watched} />
-          <WhatchedMovieList watched={watched} />
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WhatchedMovieList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
+  );
+}
+
+function MovieDetails({ selectedId, onCloseMovie }) {
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={onCloseMovie}>
+        &larr;
+      </button>
+      {selectedId}
+    </div>
   );
 }
 
