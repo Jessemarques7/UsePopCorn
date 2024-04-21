@@ -140,7 +140,6 @@ export default function MovieDetails({
                 </p>
               )}
             </div>
-
             <p>
               <em>{plot}</em>
             </p>
